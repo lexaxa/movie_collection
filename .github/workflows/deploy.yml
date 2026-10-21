@@ -1,0 +1,52 @@
+name: Deploy Multiple Versions to GitHub Pages
+
+on:
+  push:
+    branches:
+      - 'release/*'
+      - 'main'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Берёт имя ветки (например, refs/heads/release/dev), очищает её до "dev" и сохраняет в переменную ENV_NAME
+      - name: Extract branch sub-folder
+        id: extract_folder
+        run: |
+          BRANCH_NAME="${{ github.ref_name }}"
+          ENV_NAME="${BRANCH_NAME##*/}"
+          echo "ENV_NAME=$ENV_NAME" >> $GITHUB_ENV
+          echo "Собираем версию для подпапки: $ENV_NAME"
+
+      - name: Build Web
+        run: |
+          flutter build web --release --base-href "/movie_collection/${{ env.ENV_NAME }}/"
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build/web
+          branch: gh-pages
+          target-folder: ${{ env.ENV_NAME }} # Деплоит файлы в gh-pages/${{ env.ENV_NAME }}
