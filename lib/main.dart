@@ -1,3 +1,8 @@
+import 'package:flutter/services.dart';
+import 'package:movie_collection/destinations.dart';
+import 'package:web/web.dart' as web;
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'dart:js_interop';
 import 'package:flutter/material.dart';
 import 'package:movie_collection/router/router.dart';
 import 'package:movie_collection/transitions/list_detail_transition.dart';
@@ -12,6 +17,7 @@ import 'widgets/disappearing_navigation_rail.dart';
 import 'widgets/email_list_view.dart';
 
 void main() {
+  usePathUrlStrategy();
   runApp(const MainApp());
 }
 
@@ -20,11 +26,20 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      theme: ThemeData.light(),
-      routerConfig: router,
-    );
+    return MaterialApp.router(theme: ThemeData.light(), routerConfig: router);
   }
+}
+
+void fun() {
+  // Записать в Session Storage
+  web.window.sessionStorage['auth_token'] = 'your_jwt_token';
+  web.window.sessionStorage.setItem('auth_token', 'your_jwt_token');
+  web.window.localStorage.setItem('localKey', 'value localKey');
+  // final storage = web.Storage;
+  // storage.setItem('auth_token', 'your_jwt_token');
+  // Прочитать
+  String? token = web.window.sessionStorage.getItem('auth_token');
+  print('fun token=$token');
 }
 
 class Feed extends StatefulWidget {
@@ -60,7 +75,12 @@ class _FeedState extends State<Feed> with SingleTickerProviderStateMixin {
 
   // Remove wideScreen
   bool controllerInitialized = false; // Add this variable
-
+@override
+  void initState() {
+  print('_FeedState.initState run fun');
+  fun();
+    super.initState();
+  }
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -70,11 +90,13 @@ class _FeedState extends State<Feed> with SingleTickerProviderStateMixin {
     // Add from here ...
     final AnimationStatus status = _controller.status;
     if (width > 600) {
-      if (status != AnimationStatus.forward && status != AnimationStatus.completed) {
+      if (status != AnimationStatus.forward &&
+          status != AnimationStatus.completed) {
         _controller.forward();
       }
     } else {
-      if (status != AnimationStatus.reverse && status != AnimationStatus.dismissed) {
+      if (status != AnimationStatus.reverse &&
+          status != AnimationStatus.dismissed) {
         _controller.reverse();
       }
     }
@@ -100,57 +122,86 @@ class _FeedState extends State<Feed> with SingleTickerProviderStateMixin {
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) {
-        return Scaffold(
-          body: Row(
-            children: [
-              DisappearingNavigationRail(
-                railAnimation: _railAnimation,
-                railFabAnimation: _railFabAnimation,
+        return Shortcuts(
+          shortcuts: {
+            LogicalKeySet(
+              LogicalKeyboardKey.keyM,
+              LogicalKeyboardKey.controlLeft,
+            ): const IntentCtrlM(),
+          },
+          child: Actions(
+            actions: <Type, Action<Intent>>{
+              IntentCtrlM: CallbackAction<IntentCtrlM>(
+                onInvoke: (IntentCtrlM intent) => setState(() {
+                  selectedIndex = (selectedIndex + 1) % destinations.length;
+                }),
+              ),
+            },
+            child: Scaffold(
+              body: Row(
+                children: [
+                  DisappearingNavigationRail(
+                    railAnimation: _railAnimation,
+                    railFabAnimation: _railFabAnimation,
+                    selectedIndex: selectedIndex,
+                    backgroundColor: _backgroundColor,
+                    onDestinationSelected: (index) {
+                      setState(() {
+                        selectedIndex = index;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Container(
+                      color: _backgroundColor,
+                      child: ListDetailTransition(
+                        animation: _railAnimation,
+                        one: EmailListView(
+                          selectedIndex: selectedIndex,
+                          onSelected: (index) {
+                            setState(() {
+                              selectedIndex = index;
+                            });
+                          },
+                          currentUser: widget.currentUser,
+                        ),
+                        two: const ReplyListView(),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              floatingActionButton: AnimatedFloatingActionButton(
+                animation: _barAnimation,
+                onPressed: () {},
+                child: const Icon(Icons.add),
+              ),
+              bottomNavigationBar: DisappearingBottomNavigationBar(
+                barAnimation: _barAnimation,
                 selectedIndex: selectedIndex,
-                backgroundColor: _backgroundColor,
                 onDestinationSelected: (index) {
                   setState(() {
                     selectedIndex = index;
                   });
                 },
               ),
-              Expanded(
-                child: Container(
-                  color: _backgroundColor,
-                  child: ListDetailTransition(
-                    animation: _railAnimation,
-                    one: EmailListView(
-                      selectedIndex: selectedIndex,
-                      onSelected: (index) {
-                        setState(() {
-                          selectedIndex = index;
-                        });
-                      },
-                      currentUser: widget.currentUser,
-                    ),
-                    two: const ReplyListView(),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          floatingActionButton: AnimatedFloatingActionButton(
-            animation: _barAnimation,
-            onPressed: () {},
-            child: const Icon(Icons.add),
-          ),
-          bottomNavigationBar: DisappearingBottomNavigationBar(
-            barAnimation: _barAnimation,
-            selectedIndex: selectedIndex,
-            onDestinationSelected: (index) {
-              setState(() {
-                selectedIndex = index;
-              });
-            },
+            ),
           ),
         );
       },
     );
     // ... to here.
   }
+}
+
+class IntentT extends Intent {
+  const IntentT();
+}
+
+class IntentCtrlT extends Intent {
+  const IntentCtrlT();
+}
+
+class IntentCtrlM extends Intent {
+  const IntentCtrlM();
 }

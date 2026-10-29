@@ -39,7 +39,7 @@ class _ListDetailTransitionState extends State<ListDetailTransition> {
       >= 1600 => 3000,
       _ => 1000,
     };
-    print('_ListDetailTransitionState.didChangeDependencies=$width=$nextFlexFactor');
+
     if (nextFlexFactor == currentFlexFactor) {
       return;
     }
@@ -83,11 +83,12 @@ class _ListDetailTransitionState extends State<ListDetailTransition> {
           );
   }
 }
-class ResponsiveLayout extends StatelessWidget {
+
+class _ResponsiveLayout extends StatelessWidget {
   final Widget mobileBody;
   final Widget desktopBody;
 
-  const ResponsiveLayout({
+  const _ResponsiveLayout({
     super.key,
     required this.mobileBody,
     required this.desktopBody,
