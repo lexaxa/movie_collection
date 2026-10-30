@@ -8,10 +8,9 @@ import 'package:movie_collection/router/router.dart';
 import 'package:movie_collection/transitions/list_detail_transition.dart';
 import 'package:movie_collection/widgets/reply_list_view.dart';
 
-import 'animations.dart'; // Add this import
-import 'models/data.dart' as data;
+import 'animations.dart';
 import 'models/models.dart';
-import 'widgets/animated_floating_action_button.dart'; // Add this import
+import 'widgets/animated_floating_action_button.dart';
 import 'widgets/disappearing_bottom_navigation_bar.dart';
 import 'widgets/disappearing_navigation_rail.dart';
 import 'widgets/email_list_view.dart';
@@ -30,14 +29,9 @@ class MainApp extends StatelessWidget {
   }
 }
 
-void fun() {
-  // Записать в Session Storage
-  web.window.sessionStorage['auth_token'] = 'your_jwt_token';
+void addValuesToStorage() {
   web.window.sessionStorage.setItem('auth_token', 'your_jwt_token');
   web.window.localStorage.setItem('localKey', 'value localKey');
-  // final storage = web.Storage;
-  // storage.setItem('auth_token', 'your_jwt_token');
-  // Прочитать
   String? token = web.window.sessionStorage.getItem('auth_token');
   print('fun token=$token');
 }
@@ -58,7 +52,6 @@ class _FeedState extends State<Feed> with SingleTickerProviderStateMixin {
     _colorScheme.surface,
   );
 
-  // Add from here...
   late final _controller = AnimationController(
     duration: const Duration(milliseconds: 1000),
     reverseDuration: const Duration(milliseconds: 1250),
@@ -69,34 +62,27 @@ class _FeedState extends State<Feed> with SingleTickerProviderStateMixin {
   late final _railFabAnimation = RailFabAnimation(parent: _controller);
   late final _barAnimation = BarAnimation(parent: _controller);
 
-  // ... to here.
-
   int selectedIndex = 0;
+  bool controllerInitialized = false;
 
-  // Remove wideScreen
-  bool controllerInitialized = false; // Add this variable
-@override
+  @override
   void initState() {
-  print('_FeedState.initState run fun');
-  fun();
+    addValuesToStorage();
     super.initState();
   }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
     final double width = MediaQuery.of(context).size.width;
-    // Remove wideScreen reference
-    // Add from here ...
     final AnimationStatus status = _controller.status;
     if (width > 600) {
-      if (status != AnimationStatus.forward &&
-          status != AnimationStatus.completed) {
+      if (status != AnimationStatus.forward && status != AnimationStatus.completed) {
         _controller.forward();
       }
     } else {
-      if (status != AnimationStatus.reverse &&
-          status != AnimationStatus.dismissed) {
+      if (status != AnimationStatus.reverse && status != AnimationStatus.dismissed) {
         _controller.reverse();
       }
     }
@@ -104,30 +90,23 @@ class _FeedState extends State<Feed> with SingleTickerProviderStateMixin {
       controllerInitialized = true;
       _controller.value = width > 600 ? 1 : 0;
     }
-    // ... to here.
   }
 
-  // Add from here ...
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
 
-  // ... to here.
-
   @override
   Widget build(BuildContext context) {
-    // Modify from here ...
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) {
         return Shortcuts(
           shortcuts: {
-            LogicalKeySet(
-              LogicalKeyboardKey.keyM,
-              LogicalKeyboardKey.controlLeft,
-            ): const IntentCtrlM(),
+            LogicalKeySet(LogicalKeyboardKey.keyM, LogicalKeyboardKey.controlLeft):
+                const IntentCtrlM(),
           },
           child: Actions(
             actions: <Type, Action<Intent>>{
@@ -190,7 +169,6 @@ class _FeedState extends State<Feed> with SingleTickerProviderStateMixin {
         );
       },
     );
-    // ... to here.
   }
 }
 

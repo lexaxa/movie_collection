@@ -23,7 +23,6 @@ class DisappearingNavigationRail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final colorScheme = Theme.of(context).colorScheme;
     return NavRailTransition(
         animation: railAnimation,
         backgroundColor: backgroundColor,

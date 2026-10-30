@@ -19,7 +19,6 @@ Widget _buildEmailDetail(List<Email> list, int? index) {
 }
 
 final GoRouter router = GoRouter(
-  // Экран, который откроется по умолчанию
   initialLocation: '/',
   routes: [
     GoRoute(
