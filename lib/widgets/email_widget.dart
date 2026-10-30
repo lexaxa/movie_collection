@@ -54,6 +54,17 @@ class _EmailWidgetState extends State<EmailWidget> {
             if (widget.showHeadline) ...[
               EmailHeadline(email: widget.email, isSelected: widget.isSelected),
             ],
+            SingleChildScrollView(
+              child: Container(
+                height: 50,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    ...List.generate(10, (v) => Text('Item #$v'))
+                  ],
+                ),
+              ),
+            ),
             EmailContent(
               email: widget.email,
               isPreview: widget.isPreview,
@@ -255,13 +266,12 @@ class _EmailHeadlineState extends State<EmailHeadline> {
                     ],
                   ),
                 ),
-                // Display a "condensed" version if the widget in the row are
-                // expected to overflow.
                 if (constraints.maxWidth - 200 > 0) ...[
                   SizedBox(
                     height: 40,
                     width: 40,
                     child: FloatingActionButton(
+                      heroTag: null,
                       onPressed: () {},
                       elevation: 0,
                       backgroundColor: _colorScheme.surface,
@@ -273,6 +283,7 @@ class _EmailHeadlineState extends State<EmailHeadline> {
                     height: 40,
                     width: 40,
                     child: FloatingActionButton(
+                      heroTag: null,
                       onPressed: () {},
                       elevation: 0,
                       backgroundColor: _colorScheme.surface,

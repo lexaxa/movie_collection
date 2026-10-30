@@ -31,6 +31,7 @@ class _AnimatedFloatingActionButton extends State<AnimatedFloatingActionButton> 
     return ScaleTransition(
       scale: _scaleAnimation,
       child: FloatingActionButton(
+        heroTag: null,
         elevation: widget.elevation,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(

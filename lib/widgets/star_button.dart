@@ -32,6 +32,7 @@ class _StarButtonState extends State<StarButton> {
       curve: Curves.decelerate,
       duration: const Duration(milliseconds: 300),
       child: FloatingActionButton(
+        heroTag: null,
         elevation: 0,
         shape: const CircleBorder(),
         backgroundColor: _colorScheme.surface,
