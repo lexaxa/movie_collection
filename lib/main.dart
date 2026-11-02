@@ -172,14 +172,6 @@ class _FeedState extends State<Feed> with SingleTickerProviderStateMixin {
   }
 }
 
-class IntentT extends Intent {
-  const IntentT();
-}
-
-class IntentCtrlT extends Intent {
-  const IntentCtrlT();
-}
-
-class IntentCtrlM extends Intent {
-  const IntentCtrlM();
-}
+class IntentT extends Intent {const IntentT();}
+class IntentCtrlT extends Intent {const IntentCtrlT();}
+class IntentCtrlM extends Intent {const IntentCtrlM();}
