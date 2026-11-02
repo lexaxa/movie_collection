@@ -32,13 +32,23 @@ jobs:
         run: flutter pub get
 
       # Берёт имя ветки (например, refs/heads/release/dev), очищает её до "dev" и сохраняет в переменную ENV_NAME
-      - name: Extract branch sub-folder
-        id: extract_folder
+      - name: Configure Deployment Paths
+        id: config
         run: |
           BRANCH_NAME="${{ github.ref_name }}"
           ENV_NAME="${BRANCH_NAME##*/}"
-          echo "ENV_NAME=$ENV_NAME" >> $GITHUB_ENV
-          echo "Собираем версию для подпапки: $ENV_NAME"
+          
+          # Если пуш идет в ветку release/prod (или release/main), то деплоим в КОРЕНЬ
+          if [ "$ENV_NAME" = "prod" ] || [ "$ENV_NAME" = "main" ]; then
+            echo "TARGET_FOLDER=" >> $GITHUB_ENV
+            echo "BASE_HREF=/YOUR_REPOSITORY_NAME/" >> $GITHUB_ENV
+            echo "--- ДЕПЛОЙ В КОРЕНЬ САЙТА ---"
+          else
+            # Для всех остальных веток (например, release/dev) деплоим в подпапку
+            echo "TARGET_FOLDER=$ENV_NAME" >> $GITHUB_ENV
+            echo "BASE_HREF=/YOUR_REPOSITORY_NAME/$ENV_NAME/" >> $GITHUB_ENV
+            echo "--- ДЕПЛОЙ В ПОДПАПКУ: $ENV_NAME ---"
+          fi
 
       - name: Build Web
         run: |
@@ -49,4 +59,6 @@ jobs:
         with:
           folder: build/web
           branch: gh-pages
-          target-folder: ${{ env.ENV_NAME }} # Деплоит файлы в gh-pages/${{ env.ENV_NAME }}
+          # Если env.TARGET_FOLDER пустой, плагин очистит корень ветки gh-pages и положит файлы туда.
+          # Если там указано "dev", он положит файлы строго в папку dev, не трогая корень.
+          target-folder: ${{ env.TARGET_FOLDER }}
