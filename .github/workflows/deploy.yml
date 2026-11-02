@@ -41,12 +41,12 @@ jobs:
           # Если пуш идет в ветку release/prod (или release/main), то деплоим в КОРЕНЬ
           if [ "$ENV_NAME" = "prod" ] || [ "$ENV_NAME" = "main" ]; then
             echo "TARGET_FOLDER=" >> $GITHUB_ENV
-            echo "BASE_HREF=/YOUR_REPOSITORY_NAME/" >> $GITHUB_ENV
+            echo "BASE_HREF=/movie_collection/" >> $GITHUB_ENV
             echo "--- ДЕПЛОЙ В КОРЕНЬ САЙТА ---"
           else
             # Для всех остальных веток (например, release/dev) деплоим в подпапку
             echo "TARGET_FOLDER=$ENV_NAME" >> $GITHUB_ENV
-            echo "BASE_HREF=/YOUR_REPOSITORY_NAME/$ENV_NAME/" >> $GITHUB_ENV
+            echo "BASE_HREF=/movie_collection/$ENV_NAME/" >> $GITHUB_ENV
             echo "--- ДЕПЛОЙ В ПОДПАПКУ: $ENV_NAME ---"
           fi
 
