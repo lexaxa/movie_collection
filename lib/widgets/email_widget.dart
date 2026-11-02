@@ -44,7 +44,7 @@ class _EmailWidgetState extends State<EmailWidget> {
     return GestureDetector(
       onTap: widget.onSelected,
       child: Card(
-        elevation: 0,
+        elevation: 5,
         color: _surfaceColor,
         clipBehavior: Clip.hardEdge,
         child: Column(
